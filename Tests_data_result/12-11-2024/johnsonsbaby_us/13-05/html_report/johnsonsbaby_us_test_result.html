@@ -1,0 +1,400 @@
+
+    <html>
+    <head>
+        <title>johnsonsbaby_us_test_result</title>
+        <style>
+            
+        body { 
+            font-family: Arial, sans-serif; 
+            background-color: #f4f4f9; 
+            color: #333; 
+        }
+
+        #report-container {
+            width: 90%;
+            margin: auto;
+    	}
+
+        h1 { 
+            text-align: center; 
+            color: #444; 
+        }
+
+        .acc, .acc-alt { 
+            cursor: pointer;
+            color: black; 
+            padding: 10px; 
+            border: 1px solid #ddd; 
+            width: 100%; 
+            text-align: left; 
+            font-size: 14px; 
+            font-weight: bold;
+            transition: background-color 0.3s; 
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .acc { background-color: #D0D0D0; }
+        .acc-alt { background-color: #EDEDED; }
+
+        .active, .acc:hover, .acc-alt:hover { 
+            color: white;
+            background-color: #0056b3; 
+        }
+        
+        
+        .acc_Pass {
+            cursor: pointer;
+            padding: 3px;
+            margin-top: 5px;
+            border: o.5px solid #f4f4f4; 
+            width: 80%; 
+            text-align: left; 
+            font-size: 14px; 
+            transition: background-color 0.3s; 
+            display: flex;
+            justify-content: space-between;
+            color: green;
+            font-weight: bold;
+        } 
+        
+        .acc_Fail { 
+            cursor: pointer;
+            padding: 3px;
+            margin-top: 5px;
+            border: o.5px solid #f4f4f4; 
+            width: 80%; 
+            text-align: left; 
+            font-size: 14px; 
+            transition: background-color 0.3s; 
+            display: flex;
+            justify-content: space-between;
+            color: red;
+            font-weight: bold;
+        } 
+        
+        .active_Fail  { 
+            border: 1px solid #ddd; 
+            border-bottom: none;
+            color: white;
+            background-color: red; 
+        }
+        
+        .acc_Fail:hover { 
+            border: 1px solid #ddd; 
+            color: white;
+            background-color: red;
+        }
+        
+        .active_Pass  { 
+            border: 1px solid #ddd; 
+            border-bottom: none;
+            color: white;
+            background-color: green; 
+        }
+        
+        .acc_Pass:hover { 
+            border: 1px solid #ddd; 
+            color: white;
+            background-color: green;
+        }
+        
+        .toggle-sign {
+            font-size: 16px;
+            font-weight: bold;
+            text-align: right;
+            padding-right: 8px;
+        }
+        
+        .panel { 
+            padding: 10px; 
+            display: None; 
+            width: 100%; 
+            background-color: white; 
+            overflow: hidden; 
+            border: 1px solid #ddd; 
+            border-top: none;
+            font-size: 14px;  
+        }
+
+        ul, ol { 
+            margin: 0 0 10px 20px; 
+        }
+
+        li { 
+            margin-bottom: 5px; 
+        }
+
+        strong { 
+            color: #555; 
+        }
+
+        
+        </style>
+    </head>
+    <body>
+        <div id="report-container">
+        <h1>johnsonsbaby_us_test_result</h1>
+    
+        <div class=acc id ="accordion" onclick="toggleAccordion(this)">
+                <span class="row-data">1. baby-products/johnsons-calming-baby-shampoo</span>
+                <span class="toggle-sign">+</span>
+        </div>
+        <div class="panel">
+            <ul>
+<li><strong>url</strong>: https://www.johnsonsbaby.com/baby-products/johnsons-calming-baby-shampoo</li>
+<li><strong>SEO_result</strong>: <ul>
+
+                <li><div id ="accordion" class = "acc_Pass" onclick="togglePass(this)">
+                    <span>Passed_Result</span>
+                    <span class="toggle-sign">+</span>
+                </div>
+                <div class="panel">
+                    <ul>
+<li><strong>page_response</strong>: Passed</li>
+<li><strong>meta_title</strong>: Passed</li>
+<li><strong>meta_description</strong>: Passed</li>
+<li><strong>canonical_link</strong>: Passed</li>
+<li><strong>og_title</strong>: Passed</li>
+<li><strong>og_description</strong>: Passed</li>
+<li><strong>og_type</strong>: Passed</li>
+<li><strong>og_site</strong>: Passed</li>
+<li><strong>og_url</strong>: Passed</li>
+<li><strong>og_image</strong>: Passed</li>
+<li><strong>twitter_title</strong>: Passed</li>
+<li><strong>twitter_description</strong>: Passed</li>
+<li><strong>twitter_card</strong>: Passed</li>
+<li><strong>twitter_image</strong>: Passed</li>
+<li><strong>h1</strong>: Passed</li>
+</ul>
+
+                </div></li>
+                </ul>
+</li>
+</ul>
+
+        </div>
+        
+        <div class=acc-alt id ="accordion" onclick="toggleAccordion(this)">
+                <span class="row-data">2. baby-products/johnsons-head-to-toe-baby-cleansing-cloths</span>
+                <span class="toggle-sign">+</span>
+        </div>
+        <div class="panel">
+            <ul>
+<li><strong>url</strong>: https://www.johnsonsbaby.com/baby-products/johnsons-head-to-toe-baby-cleansing-cloths</li>
+<li><strong>SEO_result</strong>: <ul>
+
+                <li><div id ="accordion" class = "acc_Pass" onclick="togglePass(this)">
+                    <span>Passed_Result</span>
+                    <span class="toggle-sign">+</span>
+                </div>
+                <div class="panel">
+                    <ul>
+<li><strong>page_response</strong>: Passed</li>
+<li><strong>meta_title</strong>: Passed</li>
+<li><strong>meta_description</strong>: Passed</li>
+<li><strong>canonical_link</strong>: Passed</li>
+<li><strong>og_title</strong>: Passed</li>
+<li><strong>og_description</strong>: Passed</li>
+<li><strong>og_type</strong>: Passed</li>
+<li><strong>og_site</strong>: Passed</li>
+<li><strong>og_url</strong>: Passed</li>
+<li><strong>og_image</strong>: Passed</li>
+<li><strong>twitter_title</strong>: Passed</li>
+<li><strong>twitter_description</strong>: Passed</li>
+<li><strong>twitter_card</strong>: Passed</li>
+<li><strong>twitter_image</strong>: Passed</li>
+<li><strong>h1</strong>: Passed</li>
+</ul>
+
+                </div></li>
+                </ul>
+</li>
+</ul>
+
+        </div>
+        
+        <div class=acc id ="accordion" onclick="toggleAccordion(this)">
+                <span class="row-data">3. baby-products/johnsons-head-to-toe-baby-wash</span>
+                <span class="toggle-sign">+</span>
+        </div>
+        <div class="panel">
+            <ul>
+<li><strong>url</strong>: https://www.johnsonsbaby.com/baby-products/johnsons-head-to-toe-baby-wash</li>
+<li><strong>SEO_result</strong>: <ul>
+
+                <li><div id ="accordion" class = "acc_Pass" onclick="togglePass(this)">
+                    <span>Passed_Result</span>
+                    <span class="toggle-sign">+</span>
+                </div>
+                <div class="panel">
+                    <ul>
+<li><strong>page_response</strong>: Passed</li>
+<li><strong>meta_title</strong>: Passed</li>
+<li><strong>meta_description</strong>: Passed</li>
+<li><strong>canonical_link</strong>: Passed</li>
+<li><strong>og_title</strong>: Passed</li>
+<li><strong>og_description</strong>: Passed</li>
+<li><strong>og_type</strong>: Passed</li>
+<li><strong>og_site</strong>: Passed</li>
+<li><strong>og_url</strong>: Passed</li>
+<li><strong>og_image</strong>: Passed</li>
+<li><strong>twitter_title</strong>: Passed</li>
+<li><strong>twitter_description</strong>: Passed</li>
+<li><strong>twitter_card</strong>: Passed</li>
+<li><strong>twitter_image</strong>: Passed</li>
+<li><strong>h1</strong>: Passed</li>
+</ul>
+
+                </div></li>
+                </ul>
+</li>
+</ul>
+
+        </div>
+        
+        <div class=acc-alt id ="accordion" onclick="toggleAccordion(this)">
+                <span class="row-data">4. baby-products/shea-and-cocoa-butter-creamy-baby-oil</span>
+                <span class="toggle-sign">+</span>
+        </div>
+        <div class="panel">
+            <ul>
+<li><strong>url</strong>: https://www.johnsonsbaby.com/baby-products/shea-and-cocoa-butter-creamy-baby-oil</li>
+<li><strong>SEO_result</strong>: <ul>
+
+                <li><div id ="accordion" class = "acc_Pass" onclick="togglePass(this)">
+                    <span>Passed_Result</span>
+                    <span class="toggle-sign">+</span>
+                </div>
+                <div class="panel">
+                    <ul>
+<li><strong>page_response</strong>: Passed</li>
+<li><strong>meta_title</strong>: Passed</li>
+<li><strong>meta_description</strong>: Passed</li>
+<li><strong>canonical_link</strong>: Passed</li>
+<li><strong>og_title</strong>: Passed</li>
+<li><strong>og_description</strong>: Passed</li>
+<li><strong>og_type</strong>: Passed</li>
+<li><strong>og_site</strong>: Passed</li>
+<li><strong>og_url</strong>: Passed</li>
+<li><strong>og_image</strong>: Passed</li>
+<li><strong>twitter_title</strong>: Passed</li>
+<li><strong>twitter_description</strong>: Passed</li>
+<li><strong>twitter_card</strong>: Passed</li>
+<li><strong>twitter_image</strong>: Passed</li>
+<li><strong>h1</strong>: Passed</li>
+</ul>
+
+                </div></li>
+                </ul>
+</li>
+</ul>
+
+        </div>
+        
+        <div class=acc id ="accordion" onclick="toggleAccordion(this)">
+                <span class="row-data">5. baby-tips/caring-for-curly-hair</span>
+                <span class="toggle-sign">+</span>
+        </div>
+        <div class="panel">
+            <ul>
+<li><strong>url</strong>: https://www.johnsonsbaby.com/baby-tips/caring-for-curly-hair</li>
+<li><strong>SEO_result</strong>: <ul>
+
+                <li><div id ="accordion" class = "acc_Pass" onclick="togglePass(this)">
+                    <span>Passed_Result</span>
+                    <span class="toggle-sign">+</span>
+                </div>
+                <div class="panel">
+                    <ul>
+<li><strong>page_response</strong>: Passed</li>
+<li><strong>meta_title</strong>: Passed</li>
+<li><strong>meta_description</strong>: Passed</li>
+<li><strong>canonical_link</strong>: Passed</li>
+<li><strong>og_title</strong>: Passed</li>
+<li><strong>og_description</strong>: Passed</li>
+<li><strong>og_type</strong>: Passed</li>
+<li><strong>og_site</strong>: Passed</li>
+<li><strong>og_url</strong>: Passed</li>
+<li><strong>og_image</strong>: Passed</li>
+<li><strong>twitter_title</strong>: Passed</li>
+<li><strong>twitter_description</strong>: Passed</li>
+<li><strong>twitter_card</strong>: Passed</li>
+<li><strong>twitter_image</strong>: Passed</li>
+<li><strong>h1</strong>: Passed</li>
+</ul>
+
+                </div></li>
+                </ul>
+</li>
+</ul>
+
+        </div>
+        
+        <script>
+            function toggleAccordion(element) {
+                // Toggle the active class on the clicked accordion
+                element.classList.toggle("active");
+            
+                // Get the associated panel, which is the next sibling element
+                var panel = element.nextElementSibling;
+            
+                // Check if the panel is currently displayed
+                if (panel.style.display === "block") {
+                    panel.style.display = "none"; // Hide the panel
+                    element.querySelector(".toggle-sign").textContent = "+"; // Set toggle sign to +
+                } else {
+                    panel.style.display = "block"; // Show the panel
+                    element.querySelector(".toggle-sign").textContent = "-"; // Set toggle sign to -
+                }
+            }
+            
+            function togglePass(element) {
+                // Toggle the active class on the clicked accordion
+                element.classList.toggle("active_Pass");
+            
+                // Get the associated panel, which is the next sibling element
+                var panel = element.nextElementSibling;
+            
+                // Check if the panel is currently displayed
+                if (panel.style.display === "block") {
+                    panel.style.display = "none"; // Hide the panel
+                    element.querySelector(".toggle-sign").textContent = "+"; // Set toggle sign to +
+                } else {
+                    panel.style.display = "block"; // Show the panel
+                    element.querySelector(".toggle-sign").textContent = "-"; // Set toggle sign to -
+                }
+            }
+            
+            function toggleFail(element) {
+                // Toggle the active class on the clicked accordion
+                element.classList.toggle("active_Fail");
+            
+                // Get the associated panel, which is the next sibling element
+                var panel = element.nextElementSibling;
+            
+                // Check if the panel is currently displayed
+                if (panel.style.display === "block") {
+                    panel.style.display = "none"; // Hide the panel
+                    element.querySelector(".toggle-sign").textContent = "+"; // Set toggle sign to +
+                } else {
+                    panel.style.display = "block"; // Show the panel
+                    element.querySelector(".toggle-sign").textContent = "-"; // Set toggle sign to -
+                }
+            }
+            
+            // Automatically set up all accordions on page load
+            document.addEventListener("DOMContentLoaded", function() {
+                var accordions = document.querySelectorAll("#accordion");
+                accordions.forEach(function(accordion) {
+                    // Initially set all panels to hidden
+                    var panel = accordion.nextElementSibling;
+                    if (panel) panel.style.display = "none";
+                });
+            });
+            
+        </script>
+    </div>
+    </body>
+    </html>
+    

@@ -1,0 +1,19 @@
+[settings]
+brands = zyrtec_us		# list brands name for run the test
+				(aveeno_us, bandaid_us, benadryl_us, bengay_us, cleanandclear_us, desitin_us, 
+				 imodium_us, johnsonsbaby_us, lactaid_us, listerine_us, lubriderm_us, 
+				 mauimoisture_us, motrin_us, neosporin_us, ogxbeauty_us, pepcid_us, sudafed_us, 
+				 tylenol_us, visine_us, zarbees_us, zyrtec_us)
+headless_chk = N		# 'Y' for headless run
+full_site_testing = n		# 'Y' for run the test on whole site, for 'N' choose any parsing method
+parsing_method = 3		# Select any parsing method no.
+							1. Get URLs from csv file
+							2. Get URLs from a list
+							3. Get some random URLs from sitemap 
+
+[platform]
+browser_type = chromium		# Which browser to run the test
+viewport_width = 1920		# Browser viewport width
+viewport_height = 950		# Browser viewport height
+mobile_emulation = y		# 'Y' for mobile responsive check
+mobile_model = iPhone 14 Pro	# Mobile model for responsive check
