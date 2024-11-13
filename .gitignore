@@ -1,0 +1,5 @@
+# git ignore directory
+/config_files/*
+/test_urls/*
+/testing_data/*
+/Test_data_result/*
