@@ -1,5 +1,19 @@
+# Allow a specific directory
+!regression_package/
+
+# Allow only the specific directory
+!*
+
+# Optional: Allow .gitignore itself to be tracked
+!.gitignore
+
 # git ignore directory
 /config_files/
 /test_urls/
 /testing_data/
 /Test_data_result/
+/.idea/
+
+
+# Ignore every directory by default
+*/
