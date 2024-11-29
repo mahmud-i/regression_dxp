@@ -189,7 +189,7 @@ def generate_html_report(json_file_path):
     # Create the 'html_report' folder in the same directory as the JSON file
     json_dir = os.path.dirname(json_file_path)
     json_filename = os.path.splitext(os.path.basename(json_file_path))[0]
-    report_dir = os.path.join(json_dir, f'{json_filename}_html_report')
+    report_dir = os.path.join(json_dir, f'html_reports')
     os.makedirs(report_dir, exist_ok=True)
 
     # Create the CSS file if it doesn't already exist

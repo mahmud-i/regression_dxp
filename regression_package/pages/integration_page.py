@@ -75,11 +75,11 @@ class IntegrationInstance:
             return {"error": f"error finding: {e}"}
 
 
-    def get_ucu_data(self, url, slug, text):
+    def get_ucu_data(self, slug, text):
         try:
             if slug == "Home":
                 slug = ""
-            url = url+slug
+            url = self.instance.domain+slug
             page_1 = self.context.new_page()
             page_1.goto(url)
             page_1.wait_for_timeout(1000)

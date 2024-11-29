@@ -4,6 +4,7 @@ import json
 from http.client import responses
 from urllib.parse import urlparse
 from playwright.sync_api import BrowserContext
+from playwright_stealth import stealth_sync
 
 
 
@@ -155,6 +156,15 @@ class PageInstance:
                 if data_layer:
                     page_data = data_layer.get("page_data", {})
                     page_type = page_data.get("page_type", None)
+
+                    if page_type == "productPage":
+                        parent_locator = self.page.locator("div[class*='productOverview.background.base']")
+                        locator = parent_locator.locator("h5[class*='text.eyebrow']")
+                        if locator.count() > 0:
+                            eyebrow_text = self.safe_get_text_content(locator).strip().lower()
+                            if eyebrow_text == "discontinued":
+                                page_type = "discontinuedproductPage"
+
                     return page_type
                 else:
                     print("\n\n Page_type not found\n\n")
