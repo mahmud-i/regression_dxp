@@ -1,5 +1,8 @@
 import json as j
 import os
+from datetime import datetime
+
+
 
 css_content = """
         body { 
@@ -191,6 +194,9 @@ def generate_html_report(json_file_path):
     json_filename = os.path.splitext(os.path.basename(json_file_path))[0]
     report_dir = os.path.join(json_dir, f'html_reports')
     os.makedirs(report_dir, exist_ok=True)
+    current_time = datetime.now()
+    time = current_time.strftime("%H:%M")
+    date = current_time.strftime("%m-%d-%Y")
 
     # Create the CSS file if it doesn't already exist
     #create_css_file(report_dir)
@@ -202,14 +208,14 @@ def generate_html_report(json_file_path):
     html_content = f"""
     <html>
     <head>
-        <title>{json_filename}</title>
+        <title>{json_filename} [{date} ({time})]</title>
         <style>
             {css_content}
         </style>
     </head>
     <body>
         <div id="report-container">
-        <h1>{json_filename}</h1>
+        <h1>{json_filename} [{date} ({time})]</h1>
     """
 
     for i, (section_key, section_value) in enumerate(data.items(), start=1):

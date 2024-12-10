@@ -21,8 +21,8 @@ class TestInstance:
         self.brand_name = brand_name
         self.env = self.global_config['settings'].get('env', 'prod').strip().lower()
         current_time = datetime.now()
-        self.time = current_time.strftime("%H-%M")
-        self.date = current_time.strftime("%d-%m-%Y")
+        self.time = current_time.strftime("%H_%M")
+        self.date = current_time.strftime("%m-%d-%Y")
         self.integration = integration
         self.testing_error = {}
         self.test_result = {}
@@ -98,10 +98,11 @@ class TestInstance:
                         if 'seo' in self.tests_list:
                             seo_result = seo_test_instance.run_seo_test(page)
                             self.test_result[f'{page.slug}']["SEO_result"] = seo_result
-                            if seo_result["Failed_Result"]:
+                            if "Failed_Result" in seo_result and seo_result["Failed_Result"]:
+                                self.test_failed_result[f'{page.slug}'] = {}
                                 self.test_failed_result[f'{page.slug}']["SEO_result"] = {"Failed_Result": seo_result["Failed_Result"] }
 
-                        if page_type == "productPage":
+                        if page_type == "productPage" and 'pdp' in self.tests_list:
                             pdp_test_instance.run_pdp_test(page)
 
 
