@@ -59,8 +59,9 @@ class TestInstance:
 
         if 'site_integration' in self.tests_list:
             self.integration.run_site_integration_test(self.brand_name, self.config, page)
+            print("Site Integration parameter checking done.\n")
         page.terminate()
-        print("Site Integration parameter checking done.\n")
+
 
 
 
@@ -105,6 +106,9 @@ class TestInstance:
                         if page_type == "productPage" and 'pdp' in self.tests_list:
                             pdp_test_instance.run_pdp_test(page)
 
+                        if f'{page.slug}' in self.test_failed_result:
+                            self.test_failed_result[f'{page.slug}'].insert(0, {"url": url})
+                            self.test_failed_result[f'{page.slug}'].insert(1, {"Page_type": page_type })
 
                         page.terminate() # Close the page after testing
 

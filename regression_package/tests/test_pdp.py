@@ -21,6 +21,8 @@ class PDPTest:
         self.global_error_result = {}
         self.report_directory = report_directory
         self.instance = None
+        self.slug = None
+        self.url = None
         #atexit.register(self.generate_seo_report)
 
 
@@ -28,8 +30,11 @@ class PDPTest:
         try:
             self.instance = PDPInstance(page_instance)
 
-            url = self.instance.instance.url
-            slug = self.instance.instance.slug
+            self.url = self.instance.instance.url
+            self.slug = self.instance.instance.slug
+
+            self.global_test_result[f'{self.slug}'] = {"url": self.url}
+            self.global_pass_result[f'{self.slug}'] = {"url": self.url}
 
             viewport_width = self.instance.page.evaluate("window.innerWidth")
 
@@ -54,6 +59,9 @@ class PDPTest:
 
 
     def image_carousel_test(self, viewport_width):
+        test_result = {}
+        errors = {}
+        passing = {}
         try:
             if viewport_width > 1024 :
                 init_x = self.instance.get_first_image_x_coordinates()
@@ -62,28 +70,56 @@ class PDPTest:
                 next_button.click()
                 self.instance.instance.wait_for_time(10000)
                 current_x = self.instance.get_first_image_x_coordinates()
-                print(f"Prev: {init_x}\nCurrent: {current_x}\n")
+                if init_x == current_x:
+                    errors.update({"next_button": "Image carousel next button not working"})
+                else:
+                    passing.update({"next_button": "passed"})
                 prev_x = current_x
                 prev_button.click()
                 self.instance.instance.wait_for_time(10000)
                 current_x = self.instance.get_first_image_x_coordinates()
-                print(f"Prev: {prev_x}\nCurrent: {current_x}\n")
+                if prev_x == current_x:
+                    errors.update({"prev_button": "Image carousel prev button not working"})
+                else:
+                    passing.update({"prev_button": "passed"})
 
             elif  viewport_width <= 1024:
                 init_x = self.instance.get_first_image_x_coordinates()
                 self.instance.image_left_slide()
                 current_x = self.instance.get_first_image_x_coordinates()
-                print(f"Prev: {init_x}\nCurrent: {current_x}\n")
+                if init_x == current_x:
+                    errors.update({"left_slide": "Image carousel left slide not swiped image"})
+                else:
+                    passing.update({"left_slide": "passed"})
                 prev_x = current_x
                 self.instance.image_right_slide()
                 current_x = self.instance.get_first_image_x_coordinates()
-                print(f"Prev: {prev_x}\nCurrent: {current_x}\n")
+                if prev_x == current_x:
+                    errors.update({"right_slide": "Image carousel right slide not swiped image"})
+                else:
+                    passing.update({"right_slide": "passed"})
+
+            if errors is None:
+                self.global_pass_result[f'{self.slug}'] = {"image_carousel": passing}
+                test_result.update({"Passed_Result": passing})
+            else:
+                if self.global_error_result[f'{self.slug}'] is None:
+                    self.global_error_result[f'{self.slug}'] = {"url": self.url}
+                self.global_error_result[f'{self.slug}'] = {"image_carousel": errors}
+                test_result.update({"Failed_Result": errors})
+
+            self.global_test_result[f'{self.slug}'] = {"image_carousel_test": test_result}
+
+            return test_result
 
         except Exception as e:
-            return {"Failed_Result": f"Error run_PDP_test on'{self.instance.instance.url}': {e}"}
+            return {"Failed_Result": f"Error run_image_carousel_test on'{self.url}': {e}"}
 
 
     def image_button_test(self, viewport_width, max_count):
+        test_result = {}
+        errors = {}
+        passing = {}
         try:
             i = rand.randint(1, max_count-1)
             if viewport_width > 1024 :
@@ -95,10 +131,16 @@ class PDPTest:
                 self.instance.instance.wait_for_time(10000)
                 new_class = self.instance.get_desktop_button_class(i)
                 current_x = self.instance.get_first_image_x_coordinates()
-                print(f"Prev: {init_x}\nCurrent: {current_x}\n")
 
+                if init_x == current_x:
+                    errors.update({"image_button": "Image thubnail button not switching the image"})
+                else:
+                    passing.update({"image_button": "passed"})
                 if 'active' in new_class and 'active' not in init_class:
-                    print("Class changed to active\n")
+                    passing.update({"image_button_highlighting": "passed"})
+                else:
+                    errors.update({"image_button_highlighting": "Image thubnail button is not highlighted"})
+
 
             elif  viewport_width <= 1024:
                 self.instance.get_images_button_responsive()
@@ -109,13 +151,30 @@ class PDPTest:
                 self.instance.instance.wait_for_time(10000)
                 new_aria = self.instance.get_response_button_aria(i)
                 current_x = self.instance.get_first_image_x_coordinates()
-                print(f"Prev: {init_x}\nCurrent: {current_x}\n")
-
+                if init_x == current_x:
+                    errors.update({"image_button": "Image thubnail button not switching the image"})
+                else:
+                    passing.update({"image_button": "passed"})
                 if 'true' in new_aria and 'false' in init_aria:
-                    print("Aria changed to true\n")
+                    passing.update({"image_button_highlighting": "passed"})
+                else:
+                    errors.update({"image_button_highlighting": "Image thubnail button is not highlighted"})
+
+            if errors is None:
+                self.global_pass_result[f'{self.slug}'] = {"image_button": passing}
+                test_result.update({"Passed_Result": passing})
+            else:
+                if self.global_error_result[f'{self.slug}'] is None:
+                    self.global_error_result[f'{self.slug}'] = {"url": self.url}
+                self.global_error_result[f'{self.slug}'] = {"image_button": errors}
+                test_result.update({"Failed_Result": errors})
+
+            self.global_test_result[f'{self.slug}'] = {"image_button_test": test_result}
+
+            return test_result
 
         except Exception as e:
-            return {"Failed_Result": f"Error run_PDP_test on'{self.instance.instance.url}': {e}"}
+            return {"Failed_Result": f"Error run_PDP_test on'{self.url}': {e}"}
 
 
 

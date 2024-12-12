@@ -142,7 +142,7 @@ class SEOTest:
             self.global_error_result[f'{slug}'] = {"url": url, "Failed_Result": errors}
             test_result.update({"Failed_Result": errors})
 
-        self.global_test_result[f'{slug}'] = {"url": url, "seo_test_result": test_result}
+        self.global_test_result[f'{slug}'] = {"url": url, "seo_test": test_result}
 
         return test_result
 
