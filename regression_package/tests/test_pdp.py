@@ -1,9 +1,10 @@
 import os
 import random as rand
 import atexit
-import regression_dxp.regression_package.utils.json_utility as j
-from regression_dxp.regression_package.pages.base_page import PageInstance
-# from regression_dxp.regression_package.pages.pdp_page import PDPInstance
+import regression_package.utils.json_utility as j
+from regression_package.pages.base_page import PageInstance
+from regression_package.pages.pdp_page import PDPInstance
+
 
 
 class PDPTest:
@@ -22,11 +23,12 @@ class PDPTest:
         self.instance = None
         self.slug = None
         self.url = None
-        # atexit.register(self.generate_seo_report)
+        #atexit.register(self.generate_seo_report)
+
 
     def run_pdp_test(self, page_instance: PageInstance):
         try:
-            # self.instance = PDPInstance(page_instance)
+            self.instance = PDPInstance(page_instance)
 
             self.url = self.instance.instance.url
             self.slug = self.instance.instance.slug
@@ -36,7 +38,7 @@ class PDPTest:
 
             viewport_width = self.instance.page.evaluate("window.innerWidth")
 
-            # image carousel test start
+            #image carousel test start
             image_count = self.instance.product_images.count()
             if image_count > 1:
                 self.image_carousel_test(viewport_width)
@@ -52,6 +54,8 @@ class PDPTest:
 
         except Exception as e:
             return {"Failed_Result": f"Error run_PDP_test on'{page_instance.url}': {e}"}
+
+
 
 
     def image_carousel_test(self, viewport_width):
@@ -111,6 +115,7 @@ class PDPTest:
         except Exception as e:
             return {"Failed_Result": f"Error run_image_carousel_test on'{self.url}': {e}"}
 
+
     def image_button_test(self, viewport_width, max_count):
         test_result = {}
         errors = {}
@@ -136,7 +141,8 @@ class PDPTest:
                 else:
                     errors.update({"image_button_highlighting": "Image thubnail button is not highlighted"})
 
-            elif viewport_width <= 1024:
+
+            elif  viewport_width <= 1024:
                 self.instance.get_images_button_responsive()
                 image_button = self.instance.image_buttons.nth(i)
                 init_x = self.instance.get_first_image_x_coordinates()
@@ -170,6 +176,8 @@ class PDPTest:
         except Exception as e:
             return {"Failed_Result": f"Error run_PDP_test on'{self.url}': {e}"}
 
+
+
     def compare_seo_data(self, slug, url, seo_data):
         test_result = {}
         errors = {}
@@ -201,6 +209,7 @@ class PDPTest:
                         description = val_1
                     if key == 'og_image':
                         image = val_1
+
 
                     if key not in seo_test_data:
                         result = 'Fail'
@@ -254,6 +263,7 @@ class PDPTest:
         self.global_test_result[f'{slug}'] = {"url": url, "seo_test_result": test_result}
 
         return test_result
+
 
     def generate_seo_report(self):
         report = f"{self.report_directory}/SEO_Report"
