@@ -4,12 +4,13 @@ import json
 from http.client import responses
 from urllib.parse import urlparse
 from playwright.sync_api import BrowserContext
-
+from playwright_stealth import stealth_sync
 
 
 def get_domain(url):
     parsed_url = urlparse(url)
     return f"{parsed_url.scheme}://{parsed_url.netloc}/"
+
 
 def get_slug_from_url(url, domain):
     if url == domain :
@@ -31,7 +32,6 @@ class PageInstance:
         self.open_url()
 
 
-
     def log_response(self, response):
         status = {}
         if response.url == self.url:
@@ -40,7 +40,6 @@ class PageInstance:
             self.response = f"{status_code} ({status_message})"
             status['message'] = status_message
             print(f"URL: {self.url}\nResponse: {status_code} {status_message}")
-
 
     def open_url(self):
         try:
@@ -52,11 +51,8 @@ class PageInstance:
             print(f"Error open url '{self.url}': {e}")
             self.open_status = f"{e}"
 
-
-
     def terminate(self):
         self.page.close()
-
 
     @staticmethod
     def safe_get_attribute(element, attribute_name):
@@ -94,7 +90,6 @@ class PageInstance:
         except Exception as e:
             return f"Time_out error: {e}"
 
-
     def accept_cookies(self, accept_cookie_selector):
         try:
             self.page.locator(accept_cookie_selector).click()
@@ -119,8 +114,6 @@ class PageInstance:
             print('Closed email signup popup')
 
         return cookie, mail_signup
-
-
 
     def get_page_type(self):
         try:
@@ -155,6 +148,15 @@ class PageInstance:
                 if data_layer:
                     page_data = data_layer.get("page_data", {})
                     page_type = page_data.get("page_type", None)
+
+                    if page_type == "productPage":
+                        parent_locator = self.page.locator("div[class*='productOverview.background.base']")
+                        locator = parent_locator.locator("h5[class*='text.eyebrow']")
+                        if locator.count() > 0:
+                            eyebrow_text = self.safe_get_text_content(locator).strip().lower()
+                            if eyebrow_text == "discontinued":
+                                page_type = "discontinuedproductPage"
+
                     return page_type
                 else:
                     print("\n\n Page_type not found\n\n")

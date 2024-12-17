@@ -38,7 +38,6 @@ def extract_json_object(script_content, key):
     # Extract the JSON string
     json_str = script_content[start_brace_index:end_brace_index + 1]
 
-
     # Unescape the JSON string
     try:
         unescaped_json_str = bytes(json_str, "utf-8").decode("unicode_escape")

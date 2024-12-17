@@ -1,25 +1,23 @@
 import os
-import configparser as cp
-import regression_package.utils.json_utility as j
-from datetime import datetime
-from regression_package.pages.base_page import PageInstance
-from regression_package.pages.integration_page import IntegrationInstance
+import atexit
+import regression_dxp.regression_package.utils.json_utility as j
+from regression_dxp.regression_package.pages.base_page import PageInstance
+from regression_dxp.regression_package.pages.integration_page import IntegrationInstance
+
 
 class IntegrationCheck:
-    def __init__(self):
-        self.global_integration_result_data = {}
-        #self.seo_testing_data = j.load_json(self.seo_testing_data_path)
-        self.global_integration_test_result = {}
-        self.global_integration_pass_result = {}
-        self.global_integration_error_result = {}
-        current_time = datetime.now()
-        self.time = current_time.strftime("%H-%M")
-        self.date = current_time.strftime("%d-%m-%Y")
+    def __init__(self, report_directory, env):
+        self.global_result_data = {}
+        self.report_directory = report_directory
+        self.env = env
+        # self.seo_testing_data = j.load_json(self.seo_testing_data_path)
+        self.global_test_result = {}
+        self.global_pass_result = {}
+        self.global_error_result = {}
+        atexit.register(self.generate_report)
 
-    def run_site_integration_test(self, brand_name, page_instance: PageInstance):
+    def run_site_integration_test(self, brand_name, config, page_instance: PageInstance):
         try:
-            config = cp.ConfigParser()
-            config.read(f"./config_files/{brand_name}.ini")
 
             instance = IntegrationInstance(page_instance)
 
@@ -31,13 +29,11 @@ class IntegrationCheck:
                 "DSAR_Link" : self.dsar_test(config, instance)
             }
 
-            self.global_integration_result_data [f'{brand_name}'] = {"url": f'{page_instance.domain}', "site_integration_data": integration_data}
+            self.global_result_data [f'{brand_name.strip().upper()} [{self.env.strip().upper()}]'] = {"url": f'{page_instance.domain}', "site_integration_data": integration_data}
             print(f"Integration_Data: {integration_data}")
-
 
         except Exception as e:
             return {"Failed_Result": f"Error run_site_integration_test on'{brand_name}': {e}"}
-
 
     @staticmethod
     def ucu_test(config, instance):
@@ -45,7 +41,6 @@ class IntegrationCheck:
             ucu_data = {}
             result = {}
 
-            domain = config['urls_data']['prod_domain_url']
             ucu_slug = config['integration_check'].get('ucu_slug', None)
             result.update({'ucu_slugs' : ucu_slug})
             slug_list = ucu_slug.split(',')
@@ -53,16 +48,17 @@ class IntegrationCheck:
 
             for slug in slug_list:
                 ucu_text = config['integration_check'].get(slug, "email us")
-                link = instance.get_ucu_data(domain, slug, ucu_text)
+                link = instance.get_ucu_data(slug, ucu_text)
                 ucu_data.update({f'ucu_link_on_{slug}': link})
 
             if ucu_data:
                 links = list(ucu_data.values())
                 if all(value == links[0] for value in links):
                     result.update({"uniform_link": f"{links[0]}"})
+                    return f"{links[0]}"
                 else:
                     result.update({"multiple_link": ucu_data})
-                return result
+                    return result
             else:
                 return None
 
@@ -94,11 +90,25 @@ class IntegrationCheck:
                     result['error'] = {"error data": error, "good data": dsar_data}
                 if all(value == links[0] for value in links):
                     result.update({"uniform_link": f"{links[0]}"})
+                    return f"{links[0]}"
                 else:
                     result.update({"multiple_link": dsar_data})
-                return result
+                    return result
             else:
                 return None
 
         except Exception as e:
             return {"error": f"error finding DSAR link: {e}"}
+
+    def generate_report(self):
+        report = self.report_directory
+        if self.global_result_data:
+            os.makedirs(report, exist_ok=True)
+            j.save_json(self.global_result_data, f"{report}/JnJ_US_[{self.env.strip().upper()}]_sites_integration_data.json")
+        if self.global_test_result:
+            j.save_json(self.global_test_result, f"{report}/JnJ_US_[{self.env.strip().upper()}]_sites_integration_test_result.json")
+        if self.global_pass_result:
+            j.save_json(self.global_pass_result, f"{report}/JnJ_US_[{self.env.strip().upper()}]_sites_integration_pass_result.json")
+        if self.global_error_result:
+            os.makedirs(report, exist_ok=True)
+            j.save_json(self.global_error_result, f"{report}/JnJ_US_[{self.env.strip().upper()}]_sites_integration_error_result.json")

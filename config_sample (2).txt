@@ -17,6 +17,3 @@ viewport_width = 1920		# Browser viewport width
 viewport_height = 950		# Browser viewport height
 mobile_emulation = y		# 'Y' for mobile responsive check
 mobile_model = iPhone 14 Pro	# Mobile model for responsive check
-
-[tests]
-tests_to_run = seo            # List of tests to run
