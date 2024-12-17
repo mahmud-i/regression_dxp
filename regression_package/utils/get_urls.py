@@ -1,9 +1,9 @@
-
 import random
 import requests
 import configparser
 import xml.etree.ElementTree as ET
 import pandas as pd
+
 
 class GetUrls:
     def __init__(self, brand_name, method):
@@ -11,7 +11,6 @@ class GetUrls:
         self.config.read(f"config_files/{brand_name}.ini")
         self.prod_domain_url = self.config['urls_data']['prod_domain_url']
         self.parse_method = method
-
 
     def get_urls_from_sitemap(self):
         # Fetch the sitemap XML
@@ -34,12 +33,10 @@ class GetUrls:
             print(f"Failed to fetch sitemap: {response.status_code}")
             return []
 
-
     def get_urls_from_list(self):
         urls = self.config['urls_data']['urls_list'].split(',')
         urls = [url.strip() for url in urls]
         return urls
-
 
     def get_urls_from_csv(self):
         file_path = self.config['urls_data']['csv_file_path']
@@ -71,7 +68,6 @@ class GetUrls:
         full_url_list = self.get_urls_from_sitemap()
         url_list = self.sample_from_array(full_url_list)
         return url_list
-
 
     def get_urls_from_others(self):
         urls = None

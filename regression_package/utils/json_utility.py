@@ -1,6 +1,6 @@
 import json
 import pandas as pd
-import regression_package.utils.json_to_html as ht
+import regression_dxp.regression_package.utils.json_to_html as ht
 from collections import OrderedDict as Srt
 
 
@@ -15,7 +15,6 @@ def save_json(data, file_path):
 
     except Exception as e:
         print(f"Error saving Json file: {e}")
-
 
 
 def load_json(file_path):

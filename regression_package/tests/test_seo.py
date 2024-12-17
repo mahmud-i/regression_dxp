@@ -1,9 +1,8 @@
 import os
 import atexit
-import regression_package.utils.json_utility as j
-from regression_package.pages.base_page import PageInstance
-from regression_package.pages.seo_page import SEOInstance
-
+import regression_dxp.regression_package.utils.json_utility as j
+from regression_dxp.regression_package.pages.base_page import PageInstance
+from regression_dxp.regression_package.pages.seo_page import SEOInstance
 
 
 class SEOTest:
@@ -20,7 +19,6 @@ class SEOTest:
         self.global_error_result = {}
         self.report_directory = report_directory
         atexit.register(self.generate_seo_report)
-
 
     def run_seo_test(self, page_instance: PageInstance):
         try:
@@ -59,7 +57,6 @@ class SEOTest:
             return {"Failed_Result": f"Error run_SEO_test on'{page_instance.url}': {e}"}
 
 
-
     def compare_seo_data(self, slug, url, seo_data):
         test_result = {}
         errors = {}
@@ -91,7 +88,6 @@ class SEOTest:
                         description = val_1
                     if key == 'og_image':
                         image = val_1
-
 
                     if key not in seo_test_data:
                         result = 'Fail'
@@ -145,7 +141,6 @@ class SEOTest:
         self.global_test_result[f'{slug}'] = {"url": url, "seo_test": test_result}
 
         return test_result
-
 
     def generate_seo_report(self):
         report = f"{self.report_directory}/SEO_Report"

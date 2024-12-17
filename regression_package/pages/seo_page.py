@@ -1,7 +1,7 @@
 import os
 from tkinter import image_names
 
-from regression_package.pages.base_page import PageInstance
+from regression_dxp.regression_package.pages.base_page import PageInstance
 
 
 class SEOInstance:
