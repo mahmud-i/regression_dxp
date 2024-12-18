@@ -1,13 +1,13 @@
 import os
-from regression_dxp.regression_package.pages.base_page import PageInstance
-from regression_dxp.regression_package.utils.extract_pages_json import extract_json_object
-
+from regression_package.pages.base_page import PageInstance
+from regression_package.utils.extract_pages_json import extract_json_object
 
 class IntegrationInstance:
     def __init__(self, page_instance : PageInstance):
         self.instance = page_instance
         self.context = page_instance.context
         self.page = page_instance.page
+
 
     def get_ot_id(self):
         try:
@@ -19,6 +19,7 @@ class IntegrationInstance:
                 return None
         except Exception as e:
             return f"error finding{e}"
+
 
     def get_bv_env_data(self):
         try:
@@ -36,6 +37,7 @@ class IntegrationInstance:
 
         except Exception as e:
             return {"error": f"error finding{e}"}
+
 
     def get_cc_data(self):
         try:
@@ -72,6 +74,7 @@ class IntegrationInstance:
         except Exception as e:
             return {"error": f"error finding: {e}"}
 
+
     def get_ucu_data(self, slug, text):
         try:
             if slug == "Home":
@@ -97,6 +100,7 @@ class IntegrationInstance:
                 return None
         except Exception as e:
             return f"error finding: {e}"
+
 
     def get_dsar_data(self, text):
         try:
