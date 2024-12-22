@@ -1,13 +1,14 @@
 import os
 import atexit
 import configparser as cp
-import regression_dxp.regression_package.utils.json_utility as j
-from regression_dxp.regression_package.tests.test_pdp import PDPTest
-from regression_dxp.regression_package.tests.test_site_integration import IntegrationCheck
-from regression_dxp.regression_package.utils.browser_utility import ConfigurePlatform
-from regression_dxp.regression_package.pages.base_page import PageInstance
-from regression_dxp.regression_package.tests.test_seo import SEOTest
+import regression_package.utils.json_utility as j
+from regression_package.tests.test_pdp import PDPTest
+from regression_package.tests.test_site_integration import IntegrationCheck
+from regression_package.utils.browser_utility import ConfigurePlatform
+from regression_package.pages.base_page import PageInstance
+from regression_package.tests.test_seo import SEOTest
 from datetime import datetime
+
 
 
 class TestInstance:
@@ -34,10 +35,12 @@ class TestInstance:
         self.report_directory = None
         atexit.register(self.save_reports)
 
+
     def stage_domain(self):
         brand_name = self.prod_domain_url.replace('https://www.', '').split('.')[0].strip()
         domain_url = 'https://na-' + brand_name + '-us.staging.dxp.kenvue.com/'
         return domain_url
+
 
     def page_setup(self, context):
         if self.env == "stage" :
@@ -58,6 +61,9 @@ class TestInstance:
             self.integration.run_site_integration_test(self.brand_name, self.config, page)
             print("Site Integration parameter checking done.\n")
         page.terminate()
+
+
+
 
     def execute_test(self, urls_to_check):
         with ConfigurePlatform(self.global_config).browser() as (browser, context):
@@ -114,6 +120,8 @@ class TestInstance:
             else:
                 print("No urls to run test")
 
+
+
     def save_reports(self):
         if self.test_result:
             j.save_json(self.test_result,
@@ -132,6 +140,7 @@ class TestInstance:
         if self.test_failed_result:
             j.save_json(self.test_failed_result,
                         f"{self.report_directory}/{self.brand_name.strip().upper()}_[{self.env.strip().upper()}]_test_Failure_result.json")
+
 
         if self.testing_error:
             j.save_json(self.testing_error,

@@ -2,11 +2,11 @@
 import os
 import argparse
 import configparser as cp
-import regression_dxp.regression_package.utils.json_utility as j
+import regression_package.utils.json_utility as j
 from datetime import datetime
-from regression_dxp.regression_package.tests.test_site_integration import IntegrationCheck
-from regression_dxp.regression_package.utils.get_urls import GetUrls
-from regression_dxp.regression_package.tests.conf_test_setup import TestInstance
+from regression_package.tests.test_site_integration import IntegrationCheck
+from regression_package.utils.get_urls import GetUrls
+from regression_package.tests.conf_test_setup import TestInstance
 
 
 def initializing_test(config_path):
