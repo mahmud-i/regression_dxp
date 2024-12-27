@@ -1,9 +1,7 @@
-
-# ignore all the files
+# Ignore all files
 *
 
-
-# Allow only the files
+# Allow specific files
 !config_1.ini
 !config_sample.txt
 !execute_project.py
@@ -11,13 +9,9 @@
 # Optional: Allow .gitignore itself to be tracked
 !.gitignore
 
-# git ignore directory
-
-
-
-# Ignore every directory by default
+# Ignore every directory by default, except explicitly allowed
 */
 
-
-# Allow regression_package
-!regression_package/*
+# Allow regression_package and its contents
+!regression_package/
+!regression_package/**/*
