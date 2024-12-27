@@ -20,4 +20,4 @@
 
 
 # Allow regression_package
-!regression_package/
+!regression_package/*
