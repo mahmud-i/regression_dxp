@@ -1,15 +1,17 @@
 import os
 import atexit
-import regression_dxp.regression_package.utils.json_utility as j
-from regression_dxp.regression_package.pages.base_page import PageInstance
-from regression_dxp.regression_package.pages.seo_page import SEOInstance
+import regression_package.utils.json_utility as j
+from regression_package.pages.base_page import PageInstance
+from regression_package.pages.seo_page import SEOInstance
+
 
 
 class SEOTest:
     def __init__(self, brand_name, config, prod_domain, stage_domain, report_directory):
         self.brand = brand_name
         self.global_result_data = {}
-        self.testing_data_path = config['testing_data_path'].get('seo_data_path', None)
+        testing_data_directory = config['testing_data_path'].get('testing_data_directory', f'./testing_data/{brand_name}')
+        self.testing_data_path = f"{testing_data_directory}/seo_testing_data.json"
         self.testing_data = j.load_json(self.testing_data_path) if self.testing_data_path else None
         self.env = "stage" if stage_domain is not None else "prod"
         self.prod_domain = prod_domain
@@ -19,6 +21,7 @@ class SEOTest:
         self.global_error_result = {}
         self.report_directory = report_directory
         atexit.register(self.generate_seo_report)
+
 
     def run_seo_test(self, page_instance: PageInstance):
         try:
@@ -57,6 +60,7 @@ class SEOTest:
             return {"Failed_Result": f"Error run_SEO_test on'{page_instance.url}': {e}"}
 
 
+
     def compare_seo_data(self, slug, url, seo_data):
         test_result = {}
         errors = {}
@@ -88,6 +92,7 @@ class SEOTest:
                         description = val_1
                     if key == 'og_image':
                         image = val_1
+
 
                     if key not in seo_test_data:
                         result = 'Fail'
@@ -141,6 +146,7 @@ class SEOTest:
         self.global_test_result[f'{slug}'] = {"url": url, "seo_test": test_result}
 
         return test_result
+
 
     def generate_seo_report(self):
         report = f"{self.report_directory}/SEO_Report"

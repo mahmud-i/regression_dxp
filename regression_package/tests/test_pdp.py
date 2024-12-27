@@ -1,9 +1,10 @@
 import os
 import random as rand
 import atexit
-import regression_dxp.regression_package.utils.json_utility as j
-from regression_dxp.regression_package.pages.base_page import PageInstance
-# from regression_dxp.regression_package.pages.pdp_page import PDPInstance
+import regression_package.utils.json_utility as j
+from regression_package.pages.base_page import PageInstance
+from regression_package.pages.pdp_page import PDPInstance
+
 
 
 class PDPTest:
@@ -22,25 +23,46 @@ class PDPTest:
         self.instance = None
         self.slug = None
         self.url = None
-        # atexit.register(self.generate_seo_report)
+        atexit.register(self.generate_pdp_report)
+
 
     def run_pdp_test(self, page_instance: PageInstance):
         try:
-            # self.instance = PDPInstance(page_instance)
+            self.instance = PDPInstance(page_instance)
 
             self.url = self.instance.instance.url
             self.slug = self.instance.instance.slug
 
+            self.global_result_data[f'{self.slug}'] = {"url": self.url}
             self.global_test_result[f'{self.slug}'] = {"url": self.url}
             self.global_pass_result[f'{self.slug}'] = {"url": self.url}
+            self.global_error_result[f'{self.slug}'] = {"url": self.url, "test_error_result": None}
+            test_result = {}
 
             viewport_width = self.instance.page.evaluate("window.innerWidth")
 
-            # image carousel test start
+            self.global_result_data[f'{self.slug}']['Product_name'] = self.instance.product_title
+            self.global_result_data[f'{self.slug}']['Product_Short_Description'] = self.instance.get_product_short_description()
+
+            #image carousel test start
             image_count = self.instance.product_images.count()
+            self.global_result_data[f'{self.slug}']['Product_image_count'] = image_count
             if image_count > 1:
-                self.image_carousel_test(viewport_width)
-                self.image_button_test(viewport_width, image_count)
+                test_result['image_carousel_test'] = self.image_carousel_test(viewport_width)
+                test_result['image_button_test'] = self.image_button_test(viewport_width, image_count)
+
+            bv_id, test_result['bv_review_form_test'] = self.bv_review_test()
+            self.global_result_data[f'{self.slug}']['BV_ID'] = bv_id
+
+            ps_sku, test_result['wtb_ps_test'] = self.wtb_ps_test()
+            self.global_result_data[f'{self.slug}']['PS_SKU'] = ps_sku
+
+            jump_links, test_result['jump_links_test'] = self.jump_links_test()
+            self.global_result_data[f'{self.slug}']['Jump_Links'] = jump_links
+
+
+            if not self.global_error_result[f'{self.slug}']['test_error_result']:
+                del self.global_error_result[f'{self.slug}']
 
             '''
             if self.testing_data:
@@ -52,6 +74,8 @@ class PDPTest:
 
         except Exception as e:
             return {"Failed_Result": f"Error run_PDP_test on'{page_instance.url}': {e}"}
+
+
 
 
     def image_carousel_test(self, viewport_width):
@@ -95,21 +119,20 @@ class PDPTest:
                 else:
                     passing.update({"right_slide": "passed"})
 
-            if errors is None:
-                self.global_pass_result[f'{self.slug}'] = {"image_carousel": passing}
+            if not errors:
+                self.global_pass_result[f'{self.slug}']['image_carousel'] = passing
                 test_result.update({"Passed_Result": passing})
             else:
-                if self.global_error_result[f'{self.slug}'] is None:
-                    self.global_error_result[f'{self.slug}'] = {"url": self.url}
-                self.global_error_result[f'{self.slug}'] = {"image_carousel": errors}
+                self.global_error_result[f'{self.slug}']['test_error_result']['image_carousel'] = errors
                 test_result.update({"Failed_Result": errors})
 
-            self.global_test_result[f'{self.slug}'] = {"image_carousel_test": test_result}
+            self.global_test_result[f'{self.slug}']['image_carousel_test'] = test_result
 
             return test_result
 
         except Exception as e:
             return {"Failed_Result": f"Error run_image_carousel_test on'{self.url}': {e}"}
+
 
     def image_button_test(self, viewport_width, max_count):
         test_result = {}
@@ -128,15 +151,16 @@ class PDPTest:
                 current_x = self.instance.get_first_image_x_coordinates()
 
                 if init_x == current_x:
-                    errors.update({"image_button": "Image thubnail button not switching the image"})
+                    errors.update({"image_button": "Image thumbnail button not switching the image"})
                 else:
                     passing.update({"image_button": "passed"})
                 if 'active' in new_class and 'active' not in init_class:
                     passing.update({"image_button_highlighting": "passed"})
                 else:
-                    errors.update({"image_button_highlighting": "Image thubnail button is not highlighted"})
+                    errors.update({"image_button_highlighting": "Image thumbnail button is not highlighted"})
 
-            elif viewport_width <= 1024:
+
+            elif  viewport_width <= 1024:
                 self.instance.get_images_button_responsive()
                 image_button = self.instance.image_buttons.nth(i)
                 init_x = self.instance.get_first_image_x_coordinates()
@@ -146,29 +170,185 @@ class PDPTest:
                 new_aria = self.instance.get_response_button_aria(i)
                 current_x = self.instance.get_first_image_x_coordinates()
                 if init_x == current_x:
-                    errors.update({"image_button": "Image thubnail button not switching the image"})
+                    errors.update({"image_button": "Image thumbnail button not switching the image"})
                 else:
                     passing.update({"image_button": "passed"})
                 if 'true' in new_aria and 'false' in init_aria:
                     passing.update({"image_button_highlighting": "passed"})
                 else:
-                    errors.update({"image_button_highlighting": "Image thubnail button is not highlighted"})
+                    errors.update({"image_button_highlighting": "Image thumbnail button is not highlighted"})
 
-            if errors is None:
-                self.global_pass_result[f'{self.slug}'] = {"image_button": passing}
+            if not errors:
+                self.global_pass_result[f'{self.slug}']['image_button'] = passing
                 test_result.update({"Passed_Result": passing})
             else:
-                if self.global_error_result[f'{self.slug}'] is None:
-                    self.global_error_result[f'{self.slug}'] = {"url": self.url}
-                self.global_error_result[f'{self.slug}'] = {"image_button": errors}
+                self.global_error_result[f'{self.slug}']['test_error_result']['image_button'] = errors
                 test_result.update({"Failed_Result": errors})
 
-            self.global_test_result[f'{self.slug}'] = {"image_button_test": test_result}
+            self.global_test_result[f'{self.slug}']['image_button_test'] = test_result
 
             return test_result
 
         except Exception as e:
-            return {"Failed_Result": f"Error run_PDP_test on'{self.url}': {e}"}
+            return {"Failed_Result": f"Error run_image_button_test on'{self.url}': {e}"}
+
+    def bv_review_test(self):
+        test_result = {}
+        errors = {}
+        passing = {}
+        bv_id = None
+        try:
+            bv_components = self.instance.get_bv_components()
+            if bv_components.get("success"):
+                bv_id, bv_write_review_button, review_form_a, review_form_b = bv_components.get("values",())
+
+                if self.instance.instance.get_hidden(review_form_a) or self.instance.instance.get_hidden(review_form_b):
+                    self.instance.instance.scroll_to_element(bv_write_review_button)
+                    self.instance.instance.click_button(bv_write_review_button)
+                    self.instance.instance.wait_for_time(10000)
+
+                    if self.instance.instance.get_visibility(review_form_a):
+                        passing.update({"bv_review_form_opening": "passed"})
+                        print("BV review form visible")
+                        review_form_close_button = review_form_a.locator('button[name="Cancel"]')
+                        self.instance.instance.click_button(review_form_close_button)
+                        self.instance.instance.wait_for_time(1000)
+                        if self.instance.instance.get_visibility(review_form_a):
+                            errors.update({"bv_review_form_closing": "BV review form not closing"})
+                            print('Bv review form not closing')
+
+                        else:
+                            passing.update({"bv_review_form_closing": "passed"})
+                            print('Bv review form closed')
+
+                    elif self.instance.instance.get_visibility(review_form_b):
+                        passing.update({"bv_review_form_opening": "passed"})
+                        print("BV review form visible")
+                        review_form_close_button = review_form_b.locator('button[aria-label="Close My review modal."]')
+                        self.instance.instance.click_button(review_form_close_button)
+                        self.instance.instance.wait_for_time(1000)
+                        if self.instance.instance.get_visibility(review_form_b):
+                            errors.update({"bv_review_form_closing": "BV review form not closing"})
+                            print('Bv review form not closing')
+                        else:
+                            passing.update({"bv_review_form_closing": "passed"})
+                            print('Bv review form closed')
+                    else:
+                        errors.update({"bv_review_form_opening": "BV review form not opening"})
+                        print('Bv review form not opening')
+            else:
+                errors.update({"bv_review_form": "BV components not found"})
+                print(f"BV component not found on {self.url}")
+
+            if not errors:
+                self.global_pass_result[f'{self.slug}']['bv_review_form'] = passing
+                test_result.update({"Passed_Result": passing})
+            else:
+                self.global_error_result[f'{self.slug}']['test_error_result']['bv_review_form'] = errors
+                test_result.update({"Failed_Result": errors})
+
+            self.global_test_result[f'{self.slug}']['bv_review_form_test'] = test_result
+
+            return bv_id, test_result
+
+        except Exception as e:
+            return bv_id, {"Failed_Result": f"Error run_BV_Review_test on'{self.url}': {e}"}
+
+
+    def wtb_ps_test(self):
+        test_result = {}
+        errors = {}
+        passing = {}
+        ps_sku = None
+        try:
+            ps_wtb_items = self.instance.get_wtb_ps_components()
+
+            if ps_wtb_items.get("success"):
+                ps_sku, wtb_button, ps_pop_up = ps_wtb_items.get("values",())
+
+                if self.instance.instance.get_hidden(ps_pop_up):
+                    self.instance.instance.scroll_to_element(wtb_button)
+                    self.instance.instance.click_button(wtb_button)
+                    self.instance.instance.wait_for_time(3000)
+
+                    if self.instance.instance.get_visibility(ps_pop_up):
+                        passing.update({"ps_wtb_lightbox_opening": "passed"})
+                        print("PS wtb lightbox visible")
+                        popup_close_button = ps_pop_up.locator('span.ps-lightbox-close')
+                        self.instance.instance.click_button(popup_close_button)
+                        self.instance.instance.wait_for_time(1000)
+                        if self.instance.instance.get_visibility(ps_pop_up):
+                            errors.update({"ps_wtb_lightbox_closing": "PS wtb lightbox not closing"})
+                            print('PS wtb lightbox not closing')
+                        else:
+                            passing.update({"ps_wtb_lightbox_closing": "passed"})
+                            print('PS wtb lightbox closed')
+                    else:
+                        errors.update({"ps_wtb_lightbox_opening": "PS wtb lightbox not opening"})
+                        print('PS wtb lightbox not opening')
+
+
+            if not errors:
+                self.global_pass_result[f'{self.slug}']['PS_WTB_Lightbox'] = passing
+                test_result.update({"Passed_Result": passing})
+            else:
+                self.global_error_result[f'{self.slug}']['test_error_result']['PS_WTB_Lightbox'] = errors
+                test_result.update({"Failed_Result": errors})
+
+            self.global_test_result[f'{self.slug}']['PS_WTB_Lightbox_test'] = test_result
+
+            return ps_sku, test_result
+
+        except Exception as e:
+            return ps_sku, {"Failed_Result": f"Error run_wtb_test on'{self.url}': {e}"}
+
+
+    def jump_links_test(self):
+        test_result = {}
+        link_names = None
+        errors = {}
+        passing = {}
+        try:
+            jump_links = self.instance.get_jump_links()
+            if jump_links:
+                for i in range(jump_links.count()):
+                    current_link = jump_links.nth(i)
+                    self.instance.instance.click_button(current_link)
+                    self.instance.instance.wait_for_time(1500)
+                    jump_link_name, jump_locator = self.instance.get_jump_link_details(current_link)
+                    link_names = f"{link_names}, {jump_link_name}" if link_names else jump_link_name
+                    if jump_locator.count() > 0:
+                        box = jump_locator.nth(0).bounding_box()
+                        if box:
+                            current_jump_area_visibility = self.instance.instance.content_sight_visibility(box)
+                            if current_jump_area_visibility:
+                                print(f'{jump_link_name}: Jump link working')
+                                passing.update({f'{jump_link_name}': "passed"})
+                            else:
+                                print(f'{jump_link_name}: Jump link not working')
+                                errors.update({f'{jump_link_name}': "jump link not working"})
+                        else:
+                            print(f'{jump_link_name}: No jump link area found')
+                            errors.update({f'{jump_link_name}': "No jump link area found"})
+                    else:
+                        print(f'{jump_link_name}: No jump link found')
+                        errors.update({f'{jump_link_name}': "No jump link found"})
+
+            if not errors:
+                self.global_pass_result[f'{self.slug}']['jump_links'] = passing
+                test_result.update({"Passed_Result": passing})
+            else:
+                self.global_error_result[f'{self.slug}']['test_error_result']['jump_links'] = errors
+                test_result.update({"Failed_Result": errors})
+
+            self.global_test_result[f'{self.slug}']['jump_links_test'] = test_result
+
+            return link_names, test_result
+
+        except Exception as e:
+            return link_names, {"Failed_Result": f"Error run_jump_links_test on'{self.url}': {e}"}
+
+
 
     def compare_seo_data(self, slug, url, seo_data):
         test_result = {}
@@ -201,6 +381,7 @@ class PDPTest:
                         description = val_1
                     if key == 'og_image':
                         image = val_1
+
 
                     if key not in seo_test_data:
                         result = 'Fail'
@@ -255,14 +436,15 @@ class PDPTest:
 
         return test_result
 
-    def generate_seo_report(self):
-        report = f"{self.report_directory}/SEO_Report"
+
+    def generate_pdp_report(self):
+        report = f"{self.report_directory}/PDP_test_Report"
         os.makedirs(report, exist_ok=True)
         if self.global_result_data:
-            j.save_json(self.global_result_data, f"{report}/{self.brand.strip().upper()}_[{self.env.strip().upper()}]_seo_data.json")
+            j.save_json(self.global_result_data, f"{report}/{self.brand.strip().upper()}_[{self.env.strip().upper()}]_PDP_data.json")
         if self.global_test_result:
-            j.save_json(self.global_test_result, f"{report}/{self.brand.strip().upper()}_[{self.env.strip().upper()}]_seo_test_result.json")
+            j.save_json(self.global_test_result, f"{report}/{self.brand.strip().upper()}_[{self.env.strip().upper()}]_PDP_test_result.json")
         if self.global_pass_result:
-            j.save_json(self.global_pass_result, f"{report}/{self.brand.strip().upper()}_[{self.env.strip().upper()}]_seo_pass_result.json")
+            j.save_json(self.global_pass_result, f"{report}/{self.brand.strip().upper()}_[{self.env.strip().upper()}]_PDP_test_pass_result.json")
         if self.global_error_result:
-            j.save_json(self.global_error_result, f"{report}/{self.brand.strip().upper()}_[{self.env.strip().upper()}]_seo_error_result.json")
+            j.save_json(self.global_error_result, f"{report}/{self.brand.strip().upper()}_[{self.env.strip().upper()}]_PDP_test_error_result.json")

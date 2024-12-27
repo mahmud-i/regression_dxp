@@ -52,6 +52,7 @@ class PageInstance:
             print(f"Error getting attribute '{attribute_name}': {e}")
             return None
 
+
     def wait_for_page_load(self):
         try:
             self.page.wait_for_load_state('networkidle')
@@ -81,6 +82,7 @@ class PageInstance:
     def close_page(self):
         self.page.close()
 
+
     def get_images_data(self):
         try:
             """
@@ -107,7 +109,7 @@ class PageInstance:
                 img_name = os.path.basename(img_url) if img_url else None
 
                 # Include image data only if it is from the specified domain
-                # if domain == 'images.ctfassets.net':
+                #if domain == 'images.ctfassets.net':
                 images.append({
                     "image url": img_url,
                     "image name": img_name,
@@ -116,6 +118,7 @@ class PageInstance:
             return images
         except Exception as e:
             print(f"image found error {e}")
+
 
     def get_page_type(self):
         try:

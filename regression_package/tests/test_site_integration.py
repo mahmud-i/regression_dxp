@@ -1,20 +1,21 @@
 import os
 import atexit
-import regression_dxp.regression_package.utils.json_utility as j
-from regression_dxp.regression_package.pages.base_page import PageInstance
-from regression_dxp.regression_package.pages.integration_page import IntegrationInstance
-
+import regression_package.utils.json_utility as j
+from regression_package.pages.base_page import PageInstance
+from regression_package.pages.integration_page import IntegrationInstance
 
 class IntegrationCheck:
     def __init__(self, report_directory, env):
         self.global_result_data = {}
         self.report_directory = report_directory
         self.env = env
-        # self.seo_testing_data = j.load_json(self.seo_testing_data_path)
+        #self.seo_testing_data = j.load_json(self.seo_testing_data_path)
         self.global_test_result = {}
         self.global_pass_result = {}
         self.global_error_result = {}
         atexit.register(self.generate_report)
+
+
 
     def run_site_integration_test(self, brand_name, config, page_instance: PageInstance):
         try:
@@ -32,8 +33,10 @@ class IntegrationCheck:
             self.global_result_data [f'{brand_name.strip().upper()} [{self.env.strip().upper()}]'] = {"url": f'{page_instance.domain}', "site_integration_data": integration_data}
             print(f"Integration_Data: {integration_data}")
 
+
         except Exception as e:
             return {"Failed_Result": f"Error run_site_integration_test on'{brand_name}': {e}"}
+
 
     @staticmethod
     def ucu_test(config, instance):
@@ -47,7 +50,7 @@ class IntegrationCheck:
             slug_list = [slug.strip() for slug in slug_list]
 
             for slug in slug_list:
-                ucu_text = config['integration_check'].get(slug, "email us")
+                ucu_text = config['integration_check'].get('ucu_text', "email us")
                 link = instance.get_ucu_data(slug, ucu_text)
                 ucu_data.update({f'ucu_link_on_{slug}': link})
 
@@ -99,6 +102,7 @@ class IntegrationCheck:
 
         except Exception as e:
             return {"error": f"error finding DSAR link: {e}"}
+
 
     def generate_report(self):
         report = self.report_directory

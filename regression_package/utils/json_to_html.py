@@ -2,6 +2,8 @@ import json as j
 import os
 from datetime import datetime
 
+
+
 css_content = """
         body { 
             font-family: Arial, sans-serif; 
@@ -12,7 +14,7 @@ css_content = """
         #report-container {
             width: 90%;
             margin: auto;
-        }
+    	}
 
         h1 { 
             text-align: center; 
@@ -130,7 +132,6 @@ css_content = """
 
         """
 
-
 def create_css_file(report_dir):
     """Create a CSS file for styling the HTML report if it doesn't already exist."""
     css_path = os.path.join(report_dir, "style.css")
@@ -138,7 +139,6 @@ def create_css_file(report_dir):
         css = css_content
         with open(css_path, 'w', encoding='utf-8') as f:
             f.write(css)
-
 
 def json_to_html(json_data, indent=0):
     """Convert JSON data to HTML format recursively with accordions."""
