@@ -10,4 +10,4 @@
 # Ignore every directory by default
 */
 # Allow regression_package
-!regression_package/
+!regression_package/*
