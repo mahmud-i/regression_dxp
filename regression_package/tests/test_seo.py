@@ -10,7 +10,8 @@ class SEOTest:
     def __init__(self, brand_name, config, prod_domain, stage_domain, report_directory):
         self.brand = brand_name
         self.global_result_data = {}
-        self.testing_data_path = config['testing_data_path'].get('seo_data_path', None)
+        testing_data_directory = config['testing_data_path'].get('testing_data_directory', f'./testing_data/{brand_name}')
+        self.testing_data_path = f"{testing_data_directory}/seo_testing_data.json"
         self.testing_data = j.load_json(self.testing_data_path) if self.testing_data_path else None
         self.env = "stage" if stage_domain is not None else "prod"
         self.prod_domain = prod_domain

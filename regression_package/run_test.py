@@ -11,13 +11,16 @@ from regression_package.tests.conf_test_setup import TestInstance
 
 def initializing_test(config_path):
     current_time = datetime.now()
-    time = current_time.strftime("%H-%M")
-    date = current_time.strftime("%d-%m-%Y")
+    time = current_time.strftime("%H_%M")
+    date = current_time.strftime("%m_%d_%Y")
+
+    report_path = f"Tests_results_&_data/{date}/{time}"
 
     parser = argparse.ArgumentParser(description="Process multiple data points.")
 
     # Load configuration file argument
     parser.add_argument("--config", type=str, default= config_path, help="Config file path")
+    parser.add_argument("--reportpath", type=str, default=report_path, help="result file path")
 
     # Optional arguments
     parser.add_argument("--brands", type=str, help="Brands for test (separate with comma for multiple)")
@@ -31,6 +34,8 @@ def initializing_test(config_path):
 
     # Parse arguments only once here
     args = parser.parse_args()
+
+    report_base_directory = args.reportpath
 
     # Load configuration file
     config_path = args.config
@@ -65,7 +70,9 @@ def initializing_test(config_path):
     with open(config_path, 'w') as configfile:
         config.write(configfile)
 
-    report_directory = f"Tests_data_result/{date}/Global_test_result_[{env.strip().upper()}]/{time}"
+
+    report_directory = f"{report_base_directory}/Global_test_result_[{env.strip().upper()}]"
+    os.makedirs(report_directory, exist_ok=True)
 
     # Process brand list and run tests
     brand_list = brands.split(',')
@@ -81,5 +88,5 @@ def initializing_test(config_path):
         )
 
         # Running the test suite
-        test_service = TestInstance(brand_name, config_path, integration_test_instance)
+        test_service = TestInstance(brand_name, config_path, integration_test_instance, report_base_directory )
         test_service.execute_test(urls_to_check)

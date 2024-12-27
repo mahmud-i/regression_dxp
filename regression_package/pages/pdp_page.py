@@ -10,7 +10,10 @@ class PDPInstance:
         self.image_buttons = None
         self.image_carousel = None
         self.product_overview = None
+        self.product_description = None
+        self.product_title = None
         self.first_image_div = None
+        self.main = None
         self.page_accordions = None
         self.get_product_overview()
         self.get_product_images()
@@ -18,8 +21,16 @@ class PDPInstance:
 
     def get_product_overview(self):
         try:
+            main_section = self.page.locator('main')
+            self.main = main_section if main_section.count() > 0 else None
             product_overview = self.page.locator("div[class*='productOverview.background.base']")
-            self.product_overview = product_overview if product_overview else None
+            if product_overview:
+                self.product_overview = product_overview
+                product_description = product_overview.locator("div#overview")
+                if product_description:
+                    self.product_description = product_description
+                    self.product_title = product_description.locator("h1").inner_text()
+
         except Exception as e:
             print(f"Error getting product overview section on'{self.instance.url}': {e}")
 
@@ -29,7 +40,7 @@ class PDPInstance:
             image_carousel = self.product_overview.locator('.keen-slider.vds-d_flex')
             self.image_carousel = image_carousel if image_carousel else None
             product_images = self.image_carousel.locator('img[loading="eager"]')
-            if product_images:
+            if product_images.count() > 0:
                 self.product_images = product_images
                 self.first_image_div = self.product_images.nth(0).first.locator('xpath=parent::div')
         except Exception as e:
@@ -70,7 +81,7 @@ class PDPInstance:
     def get_next_button(self):
         try:
             next_button = self.product_overview.locator('[aria-label="Next slide"]')
-            return next_button
+            return next_button if next_button.count() > 0 else None
         except Exception as e:
             print(f"Error getting image next button on'{self.instance.url}': {e}")
             return None
@@ -78,7 +89,7 @@ class PDPInstance:
     def get_prev_button(self):
         try:
             prev_button = self.product_overview.locator('[aria-label="Previous slide"]')
-            return prev_button
+            return prev_button if prev_button.count() > 0 else None
         except Exception as e:
             print(f"Error getting image next button on'{self.instance.url}': {e}")
             return None
@@ -143,8 +154,81 @@ class PDPInstance:
             return None
 
 
-    '''
-    def get_product_details_accordions(self):
+    def get_product_short_description(self):
         try:
-            product_details_locator = self.page.locator("div[class*='productOverview.background.base']")
-    '''
+            product_short_description = self.product_description.locator("div[class*='pdp.productOverview.text.body']")
+            return self.instance.safe_get_inner_text(product_short_description) if product_short_description else None
+        except Exception as e:
+            print(f"Error getting product short description on'{self.instance.url}': {e}")
+            return None
+
+    def get_bv_components(self):
+        try:
+            bv_section = self.product_description.locator("div.bv-inline")
+            #try:
+            bv_data_locator = bv_section.locator('div[data-bv-ready="true"]') #if bv_section else None
+            #except TimeoutError:
+                #bv_data_locator = None
+            bv_footer_section = self.page.locator('#reviews')
+            bv_footer_data_locator = bv_footer_section.locator('div[data-bv-ready="true"]') #if bv_footer_section and bv_data_locator is None else None
+            review_form_a = self.page.locator("#bv-mbox-lightbox-list")
+            review_form_b = self.page.locator('div[type="main"][role="dialog"]')
+
+            if bv_data_locator.count() > 0:
+                bv_id = bv_data_locator.get_attribute("data-bv-product-id")
+                bv_write_review_button = bv_data_locator.locator('button:has-text("Write a Review")')
+
+            elif bv_footer_data_locator.count() > 0:
+                bv_id = bv_footer_data_locator.get_attribute("data-bv-product-id")
+                bv_write_review_button = bv_footer_data_locator.locator('button:has-text("Write a Review")')
+
+            else:
+                bv_id = None
+                bv_write_review_button = None
+
+            if bv_id and bv_write_review_button:
+                return { "success": True, "values": (bv_id, bv_write_review_button, review_form_a, review_form_b) }
+            else:
+                return { "success": False, "values": None }
+
+        except Exception as e:
+            print(f"Error getting BV components on'{self.instance.url}': {e}")
+            return { "success": False, "values": None, "error": str(e) }
+
+
+
+    def get_wtb_ps_components(self):
+        try:
+            ps_div = self.product_description.locator('div[ps-widget-type="lightbox"]')
+            ps_sku = self.instance.safe_get_attribute(ps_div, "ps-sku")
+            wtb_button = ps_div.locator('span.ps-button-label')
+            ps_pop_up = self.page.locator('.ps-container[role="dialog"][aria-label="Shop  from other retailers with this shopping interface."]')
+            if ps_sku and wtb_button:
+                return { "success": True, "values": (ps_sku, wtb_button, ps_pop_up) }
+            else:
+                return { "success": False, "values": None }
+        except Exception as e:
+            print(f"Error getting wtb ps components on'{self.instance.url}': {e}")
+            return { "success": False, "values": None }
+
+    def get_jump_links(self):
+        try:
+            jump_nav = self.main.locator('nav[data-sb-field-path=".jumpLinks"]')
+            jump_links = jump_nav.locator('a')
+            return jump_links if jump_links.count() > 0 else None
+        except Exception as e:
+            print(f"Error getting jump links on'{self.instance.url}': {e}")
+            return None
+
+
+    def get_jump_link_details(self, link_selector):
+        try:
+            jump_link_name = link_selector.text_content()
+            jump_id = self.instance.safe_get_attribute(link_selector, "href")
+            jump_locator = self.main.locator(f'{jump_id}')
+            return jump_link_name, jump_locator
+        except Exception as e:
+            print(f"Error getting jump link details on'{self.instance.url}': {e}")
+            return None
+
+

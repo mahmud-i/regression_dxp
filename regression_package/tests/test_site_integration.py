@@ -50,7 +50,7 @@ class IntegrationCheck:
             slug_list = [slug.strip() for slug in slug_list]
 
             for slug in slug_list:
-                ucu_text = config['integration_check'].get(slug, "email us")
+                ucu_text = config['integration_check'].get('ucu_text', "email us")
                 link = instance.get_ucu_data(slug, ucu_text)
                 ucu_data.update({f'ucu_link_on_{slug}': link})
 

@@ -1,6 +1,7 @@
 import re
 import os
 import json
+import requests
 from http.client import responses
 from urllib.parse import urlparse
 from playwright.sync_api import BrowserContext
@@ -42,6 +43,17 @@ class PageInstance:
             status['message'] = status_message
             print(f"URL: {self.url}\nResponse: {status_code} {status_message}")
 
+    @staticmethod
+    def log_response_outer_url(url):
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36"
+        }
+        response = requests.get(url, headers=headers)
+        status_code = response.status_code
+        status_message = responses.get(status_code, "Unknown Status")
+        #print(f"URL: {url}\nResponse: {status_code} {status_message}")
+        return status_code
+
 
     def open_url(self):
         try:
@@ -52,6 +64,19 @@ class PageInstance:
         except Exception as e:
             print(f"Error open url '{self.url}': {e}")
             self.open_status = f"{e}"
+
+    def open_page_new_tab(self, url):
+        try:
+            page = self.context.new_page()
+            response_status = self.log_response_outer_url(url)
+            page.goto(url)
+            page.wait_for_timeout(100)
+            page.close()
+            return response_status
+
+        except Exception as e:
+            print(f"Error open url for new link'{self.url}': {e}")
+
 
 
 
@@ -75,6 +100,18 @@ class PageInstance:
     def safe_get_text_content(element):
         try:
             value = element.text_content()
+
+            # Encode the value to handle any special characters
+            return value.encode('utf-8').decode('utf-8') if value else None
+
+        except Exception as e:
+            print(f"Error getting text of '{element}': {e}")
+            return None
+
+    @staticmethod
+    def safe_get_inner_text(element):
+        try:
+            value = element.inner_text()
 
             # Encode the value to handle any special characters
             return value.encode('utf-8').decode('utf-8') if value else None
@@ -171,3 +208,48 @@ class PageInstance:
                     return None
         except Exception as e:
             print(f"Error processing: {e}")
+
+    @staticmethod
+    def get_visibility(element):
+        try:
+            return element.is_visible(timeout=1000)
+
+        except Exception as e:
+            print(f"Error getting visibility of '{element}': {e}")
+            return None
+
+    @staticmethod
+    def get_hidden(element):
+        try:
+            return element.is_hidden(timeout=1000)
+
+        except Exception as e:
+            print(f"Error getting hidden property of '{element}': {e}")
+            return None
+
+    @staticmethod
+    def click_button(button):
+        try:
+            button.click()
+            return 'T'
+        except Exception as e:
+            return f"{e}"
+
+    def scroll_to_element(self, component):
+        try:
+            item = component.element_handle()
+            self.page.evaluate("element => element.scrollIntoView({ behavior: 'smooth', block: 'center' })", item)
+        except Exception as e:
+            print(f"Error scrolling to element '{component}': {e}")
+
+    def content_sight_visibility(self, box):
+        try:
+            viewport_height = self.page.evaluate("window.innerHeight")
+            viewport_width = self.page.evaluate("window.innerWidth")
+            if 0 <= box['x'] < viewport_width and 0 <= box['y'] < viewport_height:
+                return True
+            else:
+                return False
+        except Exception as e:
+            print(f"Error getting visibility of '{box}': {e}")
+            return False

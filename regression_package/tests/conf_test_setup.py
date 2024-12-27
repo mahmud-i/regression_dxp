@@ -2,6 +2,7 @@ import os
 import atexit
 import configparser as cp
 import regression_package.utils.json_utility as j
+from regression_package.tests.test_navigation_menu import MenuNavTest
 from regression_package.tests.test_pdp import PDPTest
 from regression_package.tests.test_site_integration import IntegrationCheck
 from regression_package.utils.browser_utility import ConfigurePlatform
@@ -12,7 +13,7 @@ from datetime import datetime
 
 
 class TestInstance:
-    def __init__(self, brand_name, config_path, integration: IntegrationCheck):
+    def __init__(self, brand_name, config_path, integration: IntegrationCheck, report_base_directory ):
         self.global_config = cp.ConfigParser()
         self.global_config.read(config_path)
         self.config = cp.ConfigParser()
@@ -20,9 +21,6 @@ class TestInstance:
         self.prod_domain_url = self.config['urls_data']['prod_domain_url']
         self.brand_name = brand_name
         self.env = self.global_config['settings'].get('env', 'prod').strip().lower()
-        current_time = datetime.now()
-        self.time = current_time.strftime("%H_%M")
-        self.date = current_time.strftime("%m-%d-%Y")
         self.integration = integration
         self.testing_error = {}
         self.test_result = {}
@@ -32,7 +30,8 @@ class TestInstance:
         test_list = self.global_config['tests'].get('tests_to_run', None).strip().lower()
         items = test_list.split(',') if test_list else None
         self.tests_list = [test.strip() for test in items] if items else tests
-        self.report_directory = None
+        self.report_directory = f"{report_base_directory}/{self.brand_name.strip().upper()}_[{self.env.strip().upper()}]"
+        os.makedirs(self.report_directory, exist_ok=True)
         atexit.register(self.save_reports)
 
 
@@ -69,18 +68,19 @@ class TestInstance:
         with ConfigurePlatform(self.global_config).browser() as (browser, context):
             c = 0
             self.page_setup(context)
-
-            if urls_to_check:
+            page_specific_test = ['seo', 'pdp']
+            common = set(page_specific_test) & set(self.tests_list)
+            if urls_to_check and common:
                 total = len(urls_to_check)
                 print(f"\n\n\nRunning tests for: {self.brand_name.strip().upper()} [{self.env.strip().upper()}]\nTotal urls to check: {total}")
 
-                self.report_directory = f"Tests_data_result/{self.date}/{self.brand_name.strip().upper()}_[{self.env.strip().upper()}]/{self.time}"
-                os.makedirs(self.report_directory, exist_ok=True)
 
                 if 'seo' in self.tests_list:
                     seo_test_instance = SEOTest(self.brand_name, self.config, self.prod_domain_url, self.stage_domain_url, self.report_directory)
 
-                pdp_test_instance = PDPTest(self.brand_name, self.config, self.prod_domain_url, self.stage_domain_url, self.report_directory)
+                if 'pdp' in self.tests_list:
+                    pdp_test_instance = PDPTest(self.brand_name, self.config, self.prod_domain_url, self.stage_domain_url, self.report_directory)
+
 
                 # Now loop through each URL and run tests
                 for url in urls_to_check:
@@ -95,20 +95,22 @@ class TestInstance:
                         page_type = page.get_page_type()
                         self.test_result[f'{page.slug}'] = {}
                         self.test_result[f'{page.slug}'] = {"url": url, "Page_type": page_type }
+                        self.test_failed_result[f'{page.slug}'] = {}
+                        self.test_failed_result[f'{page.slug}'] = {"url": url, "Page_type": page_type, "test_error_result": None }
 
                         if 'seo' in self.tests_list:
                             seo_result = seo_test_instance.run_seo_test(page)
                             self.test_result[f'{page.slug}']["SEO_result"] = seo_result
                             if "Failed_Result" in seo_result and seo_result["Failed_Result"]:
-                                self.test_failed_result[f'{page.slug}'] = {}
-                                self.test_failed_result[f'{page.slug}']["SEO_result"] = {"Failed_Result": seo_result["Failed_Result"] }
+                                self.test_failed_result[f'{page.slug}']["test_error_result"] = {"SEO_test_errors": seo_result["Failed_Result"] }
+                            else:
+                                self.test_failed_result[f'{page.slug}']["test_error_result"] = None
 
                         if page_type == "productPage" and 'pdp' in self.tests_list:
                             pdp_test_instance.run_pdp_test(page)
 
-                        if f'{page.slug}' in self.test_failed_result:
-                            self.test_failed_result[f'{page.slug}'].insert(0, {"url": url})
-                            self.test_failed_result[f'{page.slug}'].insert(1, {"Page_type": page_type })
+                        if not self.test_failed_result[f'{page.slug}']["test_error_result"]:
+                            del self.test_failed_result[f'{page.slug}']
 
                         page.terminate() # Close the page after testing
 
@@ -119,6 +121,12 @@ class TestInstance:
 
             else:
                 print("No urls to run test")
+
+            if 'header_menu' in self.tests_list:
+                header_menu_test_instance = MenuNavTest(self.brand_name, self.config, self.prod_domain_url, self.stage_domain_url, self.report_directory)
+                test_url = self.prod_domain_url if self.env == "prod" else self.stage_domain_url
+                page = PageInstance(context, test_url)
+                header_menu_test_instance.run_menu_navigation_test(page)
 
 
 
